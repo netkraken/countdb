@@ -15,11 +15,10 @@ count events with arbitrary names, over time, aggregates minutes/hours/days
 
 ## API: CountDB
 
-```open(filename)```
-opens the CountDB readonly
+```open(filename)``` opens the CountDB readonly
 
-```open_for_counting(filename)```
-constitutes a single measurement, stored in a CountDB, allows multiple calls to ```count(key)```
 
-```open_for_extending(filename)```
-merges another CountDB with the current one (used for the aggregation)
+```open_for_counting(filename)``` constitutes a single measurement, stored in a CountDB, allows multiple calls to ```count(key)```
+
+
+```open_for_extending(filename)``` extends the current CountDB with another one (```extend()```, used for the aggregation)
