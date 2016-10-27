@@ -4,43 +4,43 @@ from __future__ import division
 import json
 import os
 import sys
+from shutil import (rmtree, move)
 
 
 class CountDB(object):
 
-    @classmethod
-    def open(clazz, filename):
+    @staticmethod
+    def open(filename):
         self = CountDB(filename)
-        self.mode = "readonly"  # TODO use enums/constants for self.mode instead of plain strings
         self.load()
         return self
 
-    @classmethod
-    def open_for_counting(clazz, filename):
-        self = CountDB(filename)
-        self.mode = "count"
-        try:
-            self.load()
-        except:
-            self.counter = 0
+    @staticmethod
+    def open_for_counting(filename, clean=True):
+        self = CountDB(filename, "count")
+        if not clean:
+            try:
+                self.load()
+            except:
+                pass
         self.counter += 1
         return self
 
-    @classmethod
-    def open_for_extending(clazz, filename):
-        self = CountDB(filename)
-        self.mode = "extend"
-        try:
-            self.load()
-        except:
-            self.counter = 0
+    @staticmethod
+    def open_for_extending(filename, clean=True):
+        self = CountDB(filename, "extend")
+        if not clean:
+            try:
+                self.load()
+            except:
+                pass
         return self
 
-    def __init__(self, filename):
+    def __init__(self, filename, mode="readonly"):
         self.filename = filename
         self.data = {}
         self.counter = 0
-        self.mode = "readonly"
+        self.mode = mode
 
     def load(self):
         with self._open_file(self.filename) as data_file:
@@ -80,8 +80,8 @@ class CountDB(object):
     def extend(self, other):
         if self.mode != "extend":
             raise Exception("countdb not opened for extend (consider using open_for_extending)")
-        self.counter += 1
-        for key, count in other.convert_to_relative().items():
+        self.counter += other.counter
+        for key, count in other.data.items():
             self.data[key] = self.data.get(key, 0) + count
 
     def persist(self):
@@ -105,8 +105,25 @@ class CountDB(object):
 
 
 def makedirs(filename):
+    dirname = os.path.dirname(filename)
+    if not dirname:
+        return
     try:
-        os.makedirs(os.path.dirname(filename))
+        os.makedirs(dirname)
     except OSError as e:
         if e.errno != 17:
             raise
+
+
+def aggregate(dirname):
+    if not os.path.isdir(dirname):
+        return
+    for subdir in os.listdir(dirname):
+        aggregate(os.path.join(dirname, subdir))
+    tmp_filename = dirname + ".tmp"
+    with CountDB.open_for_extending(tmp_filename) as db:
+        for f in os.listdir(dirname):
+            sub_db = CountDB.open(os.path.join(dirname, f))
+            db.extend(sub_db)
+    rmtree(dirname)
+    move(tmp_filename, dirname)

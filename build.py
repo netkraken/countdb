@@ -14,9 +14,9 @@ description = """count events, store in plain files, aggregate over time"""
 summary = description
 authors = [Author("Arne Hilmann", "arne.hilmann@gmail.com")]
 url = "https://github.com/netkraken/countdb"
-version = "0.4"
+version = "0.5"
 
-default_task = "publish"
+default_task = ["clean", "analyze", "package"]
 
 
 @init
@@ -25,3 +25,5 @@ def set_properties(project):
 
     project.set_property("flake8_verbose_output", True)
     project.set_property("flake8_break_build", True)
+
+    project.set_property("coverage_break_build", False)
