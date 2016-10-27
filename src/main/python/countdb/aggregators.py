@@ -52,7 +52,7 @@ class TimeAggregator(object):
             # print("    copy to final")
             self.copy_to_final(path)
 
-    def housekeeping(self):
+    def aggregate(self):
         now = get_current_datetime()
         current_filename = self.create_counter_filename(now)
         # print("  current: %s" % current_filename)
@@ -105,4 +105,4 @@ if __name__ == "__main__":
             counter.count("bar braz 2")
     get_current_datetime = orig_get_current_datetime
 
-    ta.housekeeping()
+    ta.aggregate()
