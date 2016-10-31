@@ -61,6 +61,10 @@ class TimeAggregator(object):
                 full_path = join(dirpath, dirname)
                 if not current_filename.startswith(full_path):
                     self.finalize(full_path)
+            for filename in filenames:
+                full_path = join(dirpath, filename)
+                if not current_filename.startswith(full_path):
+                    self.finalize(full_path)
 
         for dirpath, dirnames, filenames in walk(self.final_dir):
             for filename in filenames:
