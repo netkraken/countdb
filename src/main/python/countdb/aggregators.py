@@ -84,25 +84,3 @@ class TimeAggregator(object):
                 if delta > self.delta_thresholds.get(depth, 0):
                     # print("        too old, removing")
                     remove(full_path)
-
-
-if __name__ == "__main__":
-    ta = TimeAggregator()
-
-    orig_get_current_datetime = get_current_datetime
-    for delta in (timedelta(days=1, hours=4),
-                  timedelta(days=1, hours=3),
-                  timedelta(days=1, hours=3, minutes=2),
-                  timedelta(hours=2),
-                  timedelta(hours=2, minutes=2),
-                  timedelta(minutes=2)):
-        def patched_current():
-            return datetime.now() - delta
-        get_current_datetime = patched_current
-        with ta.create_counter_now() as counter:
-            counter.count("foo bar 1")
-            counter.count("bar braz 2")
-            counter.count("bar braz 2")
-    get_current_datetime = orig_get_current_datetime
-
-    ta.aggregate()
