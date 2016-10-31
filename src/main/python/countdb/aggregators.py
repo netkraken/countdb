@@ -25,8 +25,8 @@ class TimeAggregator(object):
         self.final_dir = final_dir
         self.count_now_filename_format = "%Y-%m-%d/%Y-%m-%d--%H/%Y-%m-%d--%H-%M/%Y-%m-%d--%H-%M-%S"
         self.delta_thresholds = {
-            0: timedelta(days=2),
-            1: timedelta(hours=24)
+            0: timedelta(days=4*7),
+            1: timedelta(days=7)
         }
 
         self.stage_dir_depth = calc_path_depth(self.stage_dir)
